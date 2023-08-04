@@ -1,0 +1,80 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="hibernate_sequence" author="JVanDenDorpe">
+        <createSequence sequenceName="hibernate_sequence" startValue="1000" incrementBy="1"/>
+    </changeSet>
+
+    <changeSet id="create-invoice.xml" author="JVanDenDorpe">
+        <createTable tableName="invoice">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)"/>
+            <column name="supplier_id" type="bigint"/>
+            <column name="supplier_address_id" type="bigint"/>
+            <column name="supplier_bankaccount_id" type="bigint"/>
+        </createTable>
+
+        <createTable tableName="supplier">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)"/>
+        </createTable>
+
+        <createTable tableName="supplier_bankaccount">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="supplier_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="iban" type="varchar(34)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="bic" type="varchar(11)" >
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="supplier_address">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="supplier_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="street_and_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="postal_code" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address_line2" type="varchar(255)" />
+            <column name="state_or_region" type="varchar(255)" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="invoice" baseColumnNames="supplier_address_id"
+                                 constraintName="fk_invoice_supplier_address_id"
+                                 referencedTableName="supplier_address" referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="invoice" baseColumnNames="supplier_id"
+                                 constraintName="fk_invoice_supplier_id"
+                                 referencedTableName="supplier" referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="invoice" baseColumnNames="supplier_bankaccount_id"
+                                 constraintName="fk_invoice_supplier_bankaccount_id"
+                                 referencedTableName="supplier_bankaccount" referencedColumnNames="id" />
+
+        <addForeignKeyConstraint baseTableName="supplier_address" baseColumnNames="supplier_id"
+                                 constraintName="fk_supplier_address_supplier_id"
+                                 referencedTableName="supplier" referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="supplier_bankaccount" baseColumnNames="supplier_id"
+                                 constraintName="fk_supplier_bankaccount_supplier_id"
+                                 referencedTableName="supplier" referencedColumnNames="id" />
+    </changeSet>
+</databaseChangeLog>
